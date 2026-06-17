@@ -1,0 +1,52 @@
+sequenceDiagram
+    actor User
+    participant MIP as MockInterviewPage
+    participant PS as PositionSelector
+    participant MIC as MockInterviewContext
+    participant IE as interviewEngine
+    participant QG as questionGenerator
+    participant AE as answerEvaluator
+    participant FUS as followUpStrategy
+    participant CW as ChatWindow
+    participant FP as FeedbackPanel
+    participant SS as StorageService
+
+    User->>MIP: 进入模拟面试页
+    MIP->>PS: 渲染岗位选择
+    User->>PS: 选择岗位方向（如"数据分析"）
+    PS->>MIC: startInterview("数据分析")
+    MIC->>IE: createSession("数据分析")
+    IE->>QG: generateQuestion("数据分析", round=1, history=[])
+    Note over QG: 当前使用预设题库\n预留 async API
+    QG-->>IE: question1
+    IE-->>MIC: session (status=IN_PROGRESS, messages=[ai:question1])
+    MIC-->>MIP: 更新状态
+    MIP->>CW: 渲染对话窗口 + AI 第一轮提问
+
+    loop 多轮对话 (2-8 轮)
+        User->>CW: 输入回答
+        CW->>MIC: submitAnswer(answer)
+        MIC->>AE: evaluateAnswer(question, answer, position)
+        Note over AE: 规则匹配评分\n预留 async API
+        AE-->>MIC: dimensionScores + comment
+
+        alt 还有后续轮次
+            MIC->>FUS: determineFollowUp(history, scores)
+            FUS->>QG: generateQuestion(position, round+1, history)
+            QG-->>FUS: followUpQuestion
+            FUS-->>MIC: nextQuestion + updatedSession
+            MIC-->>MIP: 更新对话 + AI 追问
+        end
+    end
+
+    User->>CW: 点击"结束面试"
+    CW->>MIC: endInterview()
+    MIC->>IE: finalizeSession(session)
+    IE->>AE: calculateOverallScore(dimensionScores)
+    AE-->>IE: overallScore + summary + improvements
+    IE-->>MIC: InterviewFeedback
+    MIC->>SS: setInterviewRecords(updatedRecords)
+    MIC-->>MIP: session (status=COMPLETED, feedback)
+    MIP->>FP: 渲染评分反馈
+    FP->>FP: ScoreRadar 雷达图
+    FP->>User: 展示多维度评分 + 改进建议

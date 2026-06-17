@@ -1,0 +1,209 @@
+classDiagram
+    direction LR
+
+    class JdAdapterState {
+        +string resumeText
+        +string jdText
+        +AnalysisResult|null analysisResult
+        +boolean isAnalyzing
+        +handleResumeChange(text)
+        +handleJdChange(text)
+        +handleAnalyze()
+        +handleReset()
+    }
+
+    class AnalysisResult {
+        +number score
+        +ScoreBreakdown breakdown
+        +KeywordSet jdKeywords
+        +KeywordSet resumeKeywords
+        +MatchDetails matchDetails
+        +Suggestion[] suggestions
+        +string modifiedResume
+    }
+
+    class ScoreBreakdown {
+        +number tech
+        +number softSkill
+        +number data
+        +number experience
+    }
+
+    class KeywordSet {
+        +string[] techKeywords
+        +string[] softSkillKeywords
+        +string[] dataKeywords
+        +string[] experienceKeywords
+        +string[] allKeywords
+    }
+
+    class MatchDetails {
+        +CategoryMatch tech
+        +CategoryMatch softSkill
+        +CategoryMatch data
+        +CategoryMatch experience
+    }
+
+    class CategoryMatch {
+        +string[] matched
+        +string[] missing
+    }
+
+    class Suggestion {
+        +string type
+        +string title
+        +string description
+        +string original
+        +string suggested
+    }
+
+    JdAdapterState --> AnalysisResult
+    AnalysisResult --> ScoreBreakdown
+    AnalysisResult --> KeywordSet
+    AnalysisResult --> MatchDetails
+    MatchDetails --> CategoryMatch
+    AnalysisResult --> Suggestion
+
+    class MockInterviewState {
+        +InterviewSession|null currentSession
+        +InterviewRecord[] history
+        +startInterview(position)
+        +submitAnswer(answer)
+        +nextRound()
+        +endInterview()
+    }
+
+    class InterviewSession {
+        +string id
+        +string position
+        +ChatMessage[] messages
+        +number currentRound
+        +number totalRounds
+        +InterviewStatus status
+        +InterviewFeedback|null feedback
+    }
+
+    class ChatMessage {
+        +string role
+        +string content
+        +number timestamp
+        +number round
+    }
+
+    class InterviewFeedback {
+        +number overallScore
+        +DimensionScore[] dimensions
+        +string summary
+        +string[] improvements
+    }
+
+    class DimensionScore {
+        +string name
+        +number score
+        +string comment
+    }
+
+    class InterviewStatus {
+        <<enumeration>>
+        NOT_STARTED
+        IN_PROGRESS
+        COMPLETED
+    }
+
+    class InterviewRecord {
+        +string id
+        +string position
+        +string date
+        +number overallScore
+        +DimensionScore[] dimensions
+        +ChatMessage[] messages
+    }
+
+    MockInterviewState --> InterviewSession
+    MockInterviewState --> InterviewRecord
+    InterviewSession --> ChatMessage
+    InterviewSession --> InterviewFeedback
+    InterviewFeedback --> DimensionScore
+    InterviewSession --> InterviewStatus
+
+    class QuestionBankState {
+        +Question[] questions
+        +string[] favorites
+        +string searchKeyword
+        +string[] filterPositions
+        +string[] filterDifficulties
+        +toggleFavorite(questionId)
+        +search(keyword)
+        +filter(positions, difficulties)
+    }
+
+    class Question {
+        +string id
+        +string content
+        +string position
+        +string difficulty
+        +string category
+        +string referenceAnswer
+        +string[] tags
+    }
+
+    QuestionBankState --> Question
+
+    class ReviewState {
+        +ReviewEntry[] entries
+        +WeaknessResult|null weaknessAnalysis
+        +addEntry(entry)
+        +updateEntry(id, entry)
+        +deleteEntry(id)
+        +analyzeWeakness()
+    }
+
+    class ReviewEntry {
+        +string id
+        +string interviewType
+        +string date
+        +string question
+        +string answer
+        +number feelingRating
+        +string notes
+    }
+
+    class WeaknessResult {
+        +WeaknessItem[] topWeaknesses
+        +string[] recommendedQuestionIds
+        +TrendData trend
+    }
+
+    class WeaknessItem {
+        +string category
+        +number frequency
+        +string description
+    }
+
+    class TrendData {
+        +string[] dates
+        +number[] scores
+    }
+
+    ReviewState --> ReviewEntry
+    ReviewState --> WeaknessResult
+    WeaknessResult --> WeaknessItem
+    WeaknessResult --> TrendData
+
+    class StorageService {
+        +string PREFIX
+        +get(key) any
+        +set(key, value) void
+        +remove(key) void
+        +getResume() string|null
+        +setResume(text) void
+        +getInterviewRecords() InterviewRecord[]
+        +setInterviewRecords(records) void
+        +getFavorites() string[]
+        +setFavorites(ids) void
+        +getReviewEntries() ReviewEntry[]
+        +setReviewEntries(entries) void
+    }
+
+    StorageService ..> InterviewRecord : serializes
+    StorageService ..> ReviewEntry : serializes
