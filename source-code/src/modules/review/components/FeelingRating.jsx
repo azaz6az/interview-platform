@@ -41,7 +41,7 @@ function FeelingRating({ value, onChange }) {
         highlightSelectedOnly
         size="large"
       />
-      <Typography variant="body2" sx={{ color: '#64748d', fontWeight: 300 }}>
+      <Typography variant="body2" sx={{ color: 'text.secondary', fontWeight: 300 }}>
         {customIcons[value]?.label || '一般'}
       </Typography>
     </Box>

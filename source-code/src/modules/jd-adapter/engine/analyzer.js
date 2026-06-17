@@ -8,7 +8,7 @@ import { generateAllSuggestions } from './suggestionGenerator';
  */
 
 /**
- * 分析简历与 JD 的匹配度并生成修改建议（同步版本）
+ * 分析简历与 JD 的匹配度并生成修改建议
  * @param {string} resumeText - 简历原文
  * @param {string} jdText - JD 原文
  * @returns {Object} 分析结果 { score, breakdown, jdKeywords, resumeKeywords, matchDetails, suggestions, modifiedResume }
@@ -31,12 +31,4 @@ export function analyzeResume(resumeText, jdText) {
     suggestions,
     modifiedResume,
   };
-}
-
-/**
- * 异步 AI 分析接口（预留）
- */
-export async function analyzeWithAI(resumeText, jdText) {
-  await new Promise((resolve) => setTimeout(resolve, 500));
-  return analyzeResume(resumeText, jdText);
 }

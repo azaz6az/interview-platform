@@ -30,7 +30,7 @@ describe('JDInput', () => {
   it('should render upload area when no image is uploaded', () => {
     render(<JDInput {...defaultProps} />);
     expect(screen.getByText('上传 JD 截图')).toBeInTheDocument();
-    expect(screen.getByText('支持 PNG、JPG 格式')).toBeInTheDocument();
+    expect(screen.getByText(/支持 PNG、JPG 格式/)).toBeInTheDocument();
   });
 
   it('should render the text field for manual paste', () => {

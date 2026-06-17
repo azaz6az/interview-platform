@@ -30,7 +30,7 @@ function AnswerDialog({ question, onClose }) {
       fullWidth
       scroll="paper"
     >
-      <DialogTitle sx={{ pb: 1, color: '#061b31', fontWeight: 500 }}>
+      <DialogTitle sx={{ pb: 1, color: 'text.primary', fontWeight: 500 }}>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, mb: 1, flexWrap: 'wrap' }}>
           <Chip
             label={difficulty.label}
@@ -49,9 +49,10 @@ function AnswerDialog({ question, onClose }) {
             sx={{
               borderRadius: '4px',
               fontSize: '0.7rem',
-              bgcolor: '#ffffff',
-              color: '#64748d',
-              border: '1px solid #e5edf5',
+              bgcolor: 'background.paper',
+              color: 'text.secondary',
+              border: '1px solid',
+              borderColor: 'divider',
             }}
           />
           {position && (
@@ -69,12 +70,12 @@ function AnswerDialog({ question, onClose }) {
             />
           )}
         </Box>
-        <Typography variant="h6" sx={{ fontWeight: 500, color: '#061b31' }}>
+        <Typography variant="h6" sx={{ fontWeight: 500, color: 'text.primary' }}>
           {question.question}
         </Typography>
       </DialogTitle>
 
-      <DialogContent dividers sx={{ borderColor: '#e5edf5' }}>
+      <DialogContent dividers sx={{ borderColor: 'divider' }}>
         <Typography variant="subtitle2" sx={{ fontWeight: 500, mb: 1, color: '#533afd' }}>
           参考答案
         </Typography>
@@ -83,11 +84,11 @@ function AnswerDialog({ question, onClose }) {
           sx={{
             lineHeight: 1.8,
             whiteSpace: 'pre-wrap',
-            bgcolor: '#fafbfc',
+            bgcolor: 'action.hover',
             p: 2,
             borderRadius: '4px',
-            border: '1px solid #e5edf5',
-            color: '#061b31',
+            borderColor: 'divider',
+            color: 'text.primary',
             fontWeight: 300,
           }}
         >

@@ -25,20 +25,20 @@ function ScoreRadar({ evaluation }) {
 
   return (
     <Box>
-      <Typography variant="subtitle1" sx={{ fontWeight: 500, mb: 1, color: '#061b31' }}>
+      <Typography variant="subtitle1" sx={{ fontWeight: 500, mb: 1, color: 'text.primary' }}>
         多维度评分
       </Typography>
       <ResponsiveContainer width="100%" height={280}>
         <RadarChart data={data} cx="50%" cy="50%" outerRadius="70%">
-          <PolarGrid stroke="#e5edf5" />
+          <PolarGrid stroke={'var(--mui-palette-divider)'} />
           <PolarAngleAxis
             dataKey="dimension"
-            tick={{ fontSize: 12, fill: '#64748d', fontWeight: 300 }}
+            tick={{ fontSize: 12, fill: 'var(--mui-palette-text-secondary)', fontWeight: 300 }}
           />
           <PolarRadiusAxis
             angle={90}
             domain={[0, 5]}
-            tick={{ fontSize: 10, fill: '#64748d' }}
+            tick={{ fontSize: 10, fill: 'var(--mui-palette-text-secondary)' }}
             tickCount={6}
           />
           <Radar

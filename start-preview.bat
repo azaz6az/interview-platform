@@ -16,7 +16,8 @@ if %errorlevel% equ 0 (
     echo Press Ctrl+C to stop the server
     echo ============================================
     echo.
-    start "" cmd /c "timeout /t 3 /nobreak >nul & start http://localhost:8080"
+    timeout /t 2 /nobreak >nul
+    start http://localhost:8080
     python -m http.server 8080
     goto end
 )
@@ -28,7 +29,8 @@ if %errorlevel% equ 0 (
     echo Press Ctrl+C to stop the server
     echo ============================================
     echo.
-    start "" cmd /c "timeout /t 3 /nobreak >nul & start http://localhost:8080"
+    timeout /t 2 /nobreak >nul
+    start http://localhost:8080
     python3 -m http.server 8080
     goto end
 )
@@ -40,8 +42,7 @@ if %errorlevel% equ 0 (
     echo Press Ctrl+C to stop the server
     echo ============================================
     echo.
-    start "" cmd /c "timeout /t 5 /nobreak >nul & start http://localhost:8080"
-    call npx -y serve -s -l 8080 .
+    call npx -y serve -s -l 8080 --open .
     goto end
 )
 

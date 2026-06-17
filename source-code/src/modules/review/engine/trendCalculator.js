@@ -40,47 +40,4 @@ export function calculateTrend(entries) {
   return trend;
 }
 
-/**
- * 计算总体统计
- * @param {Array} entries - 复盘条目数组
- * @returns {Object} { totalEntries, avgScore, bestCategory, worstCategory }
- */
-export function calculateStats(entries) {
-  if (!entries || entries.length === 0) {
-    return { totalEntries: 0, avgScore: 0, bestCategory: null, worstCategory: null };
-  }
 
-  const totalEntries = entries.length;
-  const avgScore =
-    Math.round(
-      (entries.reduce((sum, e) => sum + (e.feeling || 3), 0) / totalEntries) * 10
-    ) / 10;
-
-  // 按分类统计
-  const categoryMap = {};
-  for (const entry of entries) {
-    const cat = entry.category || '通用';
-    if (!categoryMap[cat]) categoryMap[cat] = { scores: [], count: 0 };
-    categoryMap[cat].scores.push(entry.feeling || 3);
-    categoryMap[cat].count += 1;
-  }
-
-  let bestCategory = null;
-  let worstCategory = null;
-  let bestAvg = 0;
-  let worstAvg = 6;
-
-  for (const [cat, data] of Object.entries(categoryMap)) {
-    const avg = data.scores.reduce((a, b) => a + b, 0) / data.scores.length;
-    if (avg > bestAvg) {
-      bestAvg = avg;
-      bestCategory = cat;
-    }
-    if (avg < worstAvg) {
-      worstAvg = avg;
-      worstCategory = cat;
-    }
-  }
-
-  return { totalEntries, avgScore, bestCategory, worstCategory };
-}

@@ -1,81 +1,52 @@
-# 面试平台 (Interview Platform)
+# 面面俱到 - 大学生面试备战平台
 
-一站式面试准备平台，集 JD 分析、AI 模拟面试、题库练习、复盘日记于一体。
+## 快速开始
 
-## ✨ 功能亮点
+### 方式一：一键安装（推荐）
 
-| 模块 | 功能 |
-|------|------|
-| 📄 JD-简历适配 | 上传简历 + JD 截图 → AI 匹配度分析 + 优化建议 |
-| 🤖 AI 模拟面试 | 选择岗位 → 多轮对话 → 评分反馈 |
-| 🎤 语音输入 | 点击麦克风 → 语音转文字 (Web Speech API) |
-| 📚 题库练习 | 100+ 题目，按岗位/难度分类 |
-| 📝 复盘日记 | 记录面试感受 → 薄弱项分析 → 趋势图表 |
-| 📊 数据看板 | 首页快捷入口 + 薄弱项提醒 |
+1. 确保已安装 [Node.js](https://nodejs.org)（v18+）
+2. 双击 `setup.bat` → 自动安装依赖 + 创建桌面快捷方式
+3. 双击桌面 `Interview-Platform` 图标启动
 
-## 🚀 快速开始
+### 方式二：手动启动
 
 ```bash
-# 克隆项目
-git clone https://github.com/azaz6az/interview-platform.git
-cd interview-platform
-
-# 进入源码目录
 cd source-code
-
-# 安装依赖
 npm install
-
-# 启动开发服务器
 npm run dev
 ```
 
-访问 http://localhost:5173
+浏览器打开 http://localhost:5173
 
-**Windows 用户**：直接双击 `start-dev.bat` 一键启动
+## 分享给好友
 
-## 🛠️ 技术栈
+直接把整个项目文件夹发给好友（压缩成 zip 即可），好友只需：
 
-- **前端框架**: React 18 + Vite 5
-- **UI 组件**: MUI v5 + Tailwind CSS
-- **路由管理**: React Router v6
-- **状态管理**: React Context + useReducer
-- **图表**: Recharts
-- **文件解析**: pdfjs-dist + mammoth
+1. 解压
+2. 确保安装了 Node.js
+3. 双击 `setup.bat`
+4. 完成！桌面会出现快捷方式
 
-## 📁 项目结构
+## 功能
 
-```
-interview-platform/
-├── source-code/              # 主平台源码
-│   └── src/
-│       ├── modules/          # 功能模块
-│       │   ├── jd-adapter/   # JD-简历适配
-│       │   ├── mock-interview/ # 模拟面试
-│       │   ├── question-bank/  # 题库
-│       │   └── review/       # 复盘日记
-│       ├── pages/            # 页面组件
-│       ├── layouts/          # 布局组件
-│       └── contexts/         # 状态管理
-├── dist/                     # 生产构建
-├── documents/                # 项目文档
-└── jd-resume-adapter-standalone/ # 独立版 JD 适配器
-```
+- **JD 简历适配**：上传简历+JD，AI 分析匹配度，给出修改建议
+- **AI 模拟面试**：语音/文字面试，AI 实时评估打分+追问
+- **面试题库**：100+ 真实面试题，按岗位和难度分类
+- **复盘日记**：记录面试经历，分析薄弱环节
 
-## 📖 文档
+## 配置 API（可选）
 
-- [产品需求文档](documents/interview-platform-prd.md)
-- [系统架构文档](documents/interview-platform-architecture.md)
+填入通义千问 API Key 可解锁 AI 增强功能：
 
-## 📱 响应式设计
+1. 获取免费 Key：https://dashscope.console.aliyun.com/apiKey
+2. 启动后点击左侧栏底部齿轮图标，填入 Key
 
-- **桌面端** (≥960px): 左侧边栏导航
-- **移动端** (<960px): 底部标签栏导航
+| 功能 | 无 API Key | 有 API Key |
+|------|-----------|-----------|
+| JD 图片识别 | 本地识别（慢） | AI 识别（秒级） |
+| 面试评估 | 规则打分 | AI 语义评估 |
+| JD 面试 | 固定题库 | AI 生成专属题 |
 
-## 💡 语音输入提示
+## 技术栈
 
-推荐使用 **Chrome** 浏览器获得最佳语音识别体验。
-
-## 📄 License
-
-MIT
+React 18 + Vite 5 + MUI v5 + React Router v6 + Recharts + 通义千问 API

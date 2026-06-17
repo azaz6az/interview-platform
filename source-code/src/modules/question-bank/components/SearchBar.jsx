@@ -20,18 +20,18 @@ function SearchBar({ value, onChange }) {
       InputProps={{
         startAdornment: (
           <InputAdornment position="start">
-            <SearchIcon sx={{ color: '#64748d', fontSize: 20 }} />
+            <SearchIcon sx={{ color: 'text.secondary', fontSize: 20 }} />
           </InputAdornment>
         ),
       }}
       sx={{
         '& .MuiOutlinedInput-root': {
           borderRadius: '4px',
-          bgcolor: '#ffffff',
+          bgcolor: 'background.paper',
           fontFamily: '"Inter", -apple-system, BlinkMacSystemFont, sans-serif',
           fontWeight: 300,
           '& fieldset': {
-            borderColor: '#e5edf5',
+            borderColor: 'divider',
           },
           '&:hover fieldset': {
             borderColor: '#b9b9f9',

@@ -15,48 +15,30 @@ import {
   isSpeechSupported,
   createRecognition,
 } from '../engine/speechRecognition';
+import { GRADIENTS, SHADOWS } from '../../../theme/theme';
 
 /**
- * ChatWindow - 聊天窗口（Stripe 风格 + 录音体验优化）
- *
- * 核心录音优化：
- * 1. 更大麦克风按钮 48x48，放在输入框左边
- * 2. 波形动画条（录音中在输入框上方显示 5 个动画条）
- * 3. 清晰录音状态：浅紫底 + placeholder "正在聆听..." + 紫色边框
- * 4. interim 显示优化：浅紫色 italic + "(识别中)" 标签
- * 5. 停止录音提示条
- * 6. Stripe Purple 脉冲动画
- * 7. Stripe 风格发送按钮
- * 8. 不支持语音时 Snackbar 提示
- *
- * @param {Object} props
- * @param {Array} props.messages - 消息列表 [{ role, content, timestamp }]
- * @param {Function} props.onSend - 发送消息回调
- * @param {boolean} props.disabled - 是否禁用输入
- * @param {boolean} props.isEvaluating - AI 是否正在评估
+ * ChatWindow - 聊天窗口
+ * 渐变发送按钮 + 录音波形动画 + 答题计时器
  */
 function ChatWindow({ messages, onSend, disabled, isEvaluating }) {
   const [input, setInput] = useState('');
-  /** interim 识别中文字（尚未确认的语音识别结果） */
   const [interimText, setInterimText] = useState('');
   const [isRecording, setIsRecording] = useState(false);
   const [speechSupported] = useState(() => isSpeechSupported());
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
+  const [elapsedSeconds, setElapsedSeconds] = useState(0);
   const messagesEndRef = useRef(null);
   const inputRef = useRef(null);
   const recognitionRef = useRef(null);
-  /** 首次使用提示 flag */
   const hasShownSpeechTip = useRef(false);
+  const timerRef = useRef(null);
 
-  /** 自动滚动到底部 */
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
-  /**
-   * 组件卸载时停止语音识别并释放资源
-   */
   useEffect(() => {
     return () => {
       if (recognitionRef.current) {
@@ -66,7 +48,6 @@ function ChatWindow({ messages, onSend, disabled, isEvaluating }) {
     };
   }, []);
 
-  /** 首次使用语音时提示推荐 Chrome */
   useEffect(() => {
     if (speechSupported && !hasShownSpeechTip.current) {
       hasShownSpeechTip.current = true;
@@ -75,13 +56,33 @@ function ChatWindow({ messages, onSend, disabled, isEvaluating }) {
     }
   }, [speechSupported]);
 
+  /** 答题计时器 */
+  useEffect(() => {
+    if (!isEvaluating && !disabled) {
+      timerRef.current = setInterval(() => {
+        setElapsedSeconds((prev) => prev + 1);
+      }, 1000);
+    } else {
+      if (timerRef.current) clearInterval(timerRef.current);
+    }
+    return () => { if (timerRef.current) clearInterval(timerRef.current); };
+  }, [isEvaluating, disabled]);
+
+  /** 每次 AI 发送新问题后重置计时器 */
+  useEffect(() => {
+    const lastMsg = messages[messages.length - 1];
+    if (lastMsg?.role === 'ai') {
+      setElapsedSeconds(0);
+    }
+  }, [messages.length]);
+
   const handleSend = () => {
-    /** 只发送已确认的 input，interimText 不发送 */
     const trimmed = input.trim();
     if (!trimmed) return;
     onSend(trimmed);
     setInput('');
     setInterimText('');
+    setElapsedSeconds(0);
   };
 
   const handleKeyDown = (e) => {
@@ -91,11 +92,7 @@ function ChatWindow({ messages, onSend, disabled, isEvaluating }) {
     }
   };
 
-  /**
-   * 切换语音识别状态：开始/停止录音
-   */
   const handleMicToggle = useCallback(() => {
-    // 如果正在录音，则停止
     if (isRecording && recognitionRef.current) {
       recognitionRef.current.stop();
       recognitionRef.current = null;
@@ -103,7 +100,6 @@ function ChatWindow({ messages, onSend, disabled, isEvaluating }) {
       return;
     }
 
-    // 如果浏览器不支持语音识别，用 Snackbar 提示
     if (!speechSupported) {
       setSnackbarMessage('当前浏览器不支持语音输入，推荐使用 Chrome 浏览器');
       setSnackbarOpen(true);
@@ -111,21 +107,17 @@ function ChatWindow({ messages, onSend, disabled, isEvaluating }) {
     }
 
     try {
-      // 创建语音识别实例
       const recognition = createRecognition({
         onResult: ({ transcript, isFinal }) => {
           if (isFinal) {
-            // 最终结果：追加到 input，清除 interim
             setInput((prev) => prev + transcript);
             setInterimText('');
-            // 最终结果确认后自动停止录音
             if (recognitionRef.current) {
               recognitionRef.current.stop();
               recognitionRef.current = null;
             }
             setIsRecording(false);
           } else {
-            // 临时结果：只更新 interimText，不修改 input
             setInterimText(transcript);
           }
         },
@@ -152,7 +144,6 @@ function ChatWindow({ messages, onSend, disabled, isEvaluating }) {
     }
   }, [isRecording, speechSupported]);
 
-  /** 关闭 Snackbar */
   const handleSnackbarClose = () => {
     setSnackbarOpen(false);
   };
@@ -162,12 +153,12 @@ function ChatWindow({ messages, onSend, disabled, isEvaluating }) {
       sx={{
         display: 'flex',
         flexDirection: 'column',
-        height: { xs: 400, md: 500 },
-        border: '1px solid #e5edf5',
-        borderRadius: '6px',
+        height: { xs: 420, md: 520 },
+        borderColor: 'divider',
+        borderRadius: 3,
         overflow: 'hidden',
-        bgcolor: '#ffffff',
-        boxShadow: 'rgba(23,23,23,0.08) 0px 15px 35px 0px',
+        bgcolor: 'background.paper',
+        boxShadow: SHADOWS.card,
       }}
     >
       {/* 消息列表 */}
@@ -179,11 +170,30 @@ function ChatWindow({ messages, onSend, disabled, isEvaluating }) {
           display: 'flex',
           flexDirection: 'column',
           gap: 1.5,
-          bgcolor: '#fafbfc',
+          bgcolor: 'action.hover',
         }}
       >
         {messages.length === 0 && (
-          <Box sx={{ textAlign: 'center', py: 4, color: '#64748d' }}>
+          <Box sx={{ textAlign: 'center', py: 5, color: 'text.secondary' }}>
+            <Box
+              sx={{
+                width: 64,
+                height: 64,
+                borderRadius: '50%',
+                background: 'linear-gradient(135deg, #f5f3ff 0%, #ede9fe 100%)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                mx: 'auto',
+                mb: 2,
+                fontSize: '1.5rem',
+              }}
+            >
+              🎤
+            </Box>
+            <Typography variant="body1" sx={{ fontWeight: 500, color: 'text.primary', mb: 0.5 }}>
+              准备好了吗？
+            </Typography>
             <Typography variant="body2" sx={{ fontWeight: 300 }}>
               面试即将开始，请准备好你的回答
             </Typography>
@@ -199,16 +209,11 @@ function ChatWindow({ messages, onSend, disabled, isEvaluating }) {
                 width: 8,
                 height: 8,
                 borderRadius: '50%',
-                bgcolor: '#533afd',
+                background: GRADIENTS.primary,
                 animation: 'pulse 1.5s infinite',
-                '@keyframes pulse': {
-                  '0%': { opacity: 0.4 },
-                  '50%': { opacity: 1 },
-                  '100%': { opacity: 0.4 },
-                },
               }}
             />
-            <Typography variant="body2" sx={{ color: '#64748d', fontWeight: 300 }}>
+            <Typography variant="body2" sx={{ color: 'text.secondary', fontWeight: 300 }}>
               AI 正在思考...
             </Typography>
           </Box>
@@ -216,14 +221,14 @@ function ChatWindow({ messages, onSend, disabled, isEvaluating }) {
         <div ref={messagesEndRef} />
       </Box>
 
-      {/* ===== 录音波形动画条区域（录音中显示） ===== */}
+      {/* 录音波形动画条区域 */}
       {isRecording && (
         <Box
           sx={{
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            gap: 0.5,
+            gap: 0.75,
             px: 2,
             py: 1,
             bgcolor: 'rgba(83,58,253,0.04)',
@@ -236,7 +241,7 @@ function ChatWindow({ messages, onSend, disabled, isEvaluating }) {
                 width: 4,
                 height: 4,
                 borderRadius: '2px',
-                bgcolor: '#533afd',
+                background: GRADIENTS.primary,
                 animation: `waveBar 0.8s ease-in-out ${delay}s infinite`,
               }}
             />
@@ -244,7 +249,7 @@ function ChatWindow({ messages, onSend, disabled, isEvaluating }) {
         </Box>
       )}
 
-      {/* ===== 停止录音提示条（录音中显示） ===== */}
+      {/* 停止录音提示条 */}
       {isRecording && (
         <Box
           sx={{
@@ -259,7 +264,7 @@ function ChatWindow({ messages, onSend, disabled, isEvaluating }) {
             variant="caption"
             sx={{
               color: '#533afd',
-              fontWeight: 400,
+              fontWeight: 500,
               fontSize: '0.7rem',
               letterSpacing: '0.02em',
             }}
@@ -269,23 +274,47 @@ function ChatWindow({ messages, onSend, disabled, isEvaluating }) {
         </Box>
       )}
 
-      {/* 输入框区域 — Stripe 风格 */}
+      {/* 输入框区域 */}
       <Box
         sx={{
           display: 'flex',
           gap: 1,
           p: 1.5,
-          borderTop: '1px solid #e5edf5',
-          bgcolor: isRecording ? 'rgba(83,58,253,0.04)' : '#ffffff',
+          pt: 2.5,
+          borderColor: 'divider',
+          bgcolor: isRecording ? 'rgba(83,58,253,0.04)' : 'background.paper',
           alignItems: 'flex-end',
+          position: 'relative',
         }}
       >
-        {/* 麦克风按钮 — 48x48 更大，放在输入框左边 */}
+        {/* 答题计时器 */}
+        {!isEvaluating && !disabled && elapsedSeconds > 0 && (
+          <Box
+            sx={{
+              position: 'absolute',
+              top: -28,
+              left: 12,
+              fontSize: '0.7rem',
+              color: elapsedSeconds > 60 ? '#ea2261' : 'text.secondary',
+              fontWeight: 500,
+              bgcolor: 'rgba(255,255,255,0.9)',
+              px: 1,
+              py: 0.25,
+              borderRadius: 1,
+              borderColor: 'divider',
+              fontVariantNumeric: 'tabular-nums',
+            }}
+          >
+            ⏱ {Math.floor(elapsedSeconds / 60)}:{String(elapsedSeconds % 60).padStart(2, '0')}
+          </Box>
+        )}
+
+        {/* 麦克风按钮 */}
         <IconButton
           onClick={handleMicToggle}
           disabled={disabled}
           sx={{
-            borderRadius: '4px',
+            borderRadius: 2,
             width: 48,
             height: 48,
             alignSelf: 'flex-end',
@@ -297,8 +326,8 @@ function ChatWindow({ messages, onSend, disabled, isEvaluating }) {
               bgcolor: isRecording ? '#4434d4' : 'rgba(83,58,253,0.12)',
             },
             '&.Mui-disabled': {
-              bgcolor: 'rgba(255,255,255,0.02)',
-              color: '#64748d',
+              bgcolor: 'rgba(0,0,0,0.04)',
+              color: 'text.secondary',
             },
           }}
         >
@@ -321,11 +350,10 @@ function ChatWindow({ messages, onSend, disabled, isEvaluating }) {
             size="small"
             sx={{
               '& .MuiOutlinedInput-root': {
-                borderRadius: '4px',
+                borderRadius: 2,
                 fontSize: '0.9rem',
                 fontWeight: 300,
                 fontFamily: '"Inter", -apple-system, BlinkMacSystemFont, sans-serif',
-                /** 录音中：紫色边框 */
                 ...(isRecording && {
                   '& fieldset': {
                     borderColor: '#b9b9f9',
@@ -337,7 +365,7 @@ function ChatWindow({ messages, onSend, disabled, isEvaluating }) {
               },
             }}
           />
-          {/* interim 识别中文字 — 浅紫色 italic + (识别中) 标签 */}
+          {/* interim 识别中文字 */}
           {interimText && (
             <Box
               sx={{
@@ -366,7 +394,7 @@ function ChatWindow({ messages, onSend, disabled, isEvaluating }) {
                 sx={{
                   color: '#b9b9f9',
                   fontSize: '0.6rem',
-                  fontWeight: 400,
+                  fontWeight: 500,
                   bgcolor: 'rgba(83,58,253,0.08)',
                   px: 0.5,
                   borderRadius: '2px',
@@ -379,22 +407,25 @@ function ChatWindow({ messages, onSend, disabled, isEvaluating }) {
           )}
         </Box>
 
-        {/* 发送按钮 — Stripe Purple CTA 风格 */}
+        {/* 发送按钮 — 渐变背景 */}
         <IconButton
           onClick={handleSend}
           disabled={disabled || !input.trim()}
           sx={{
-            bgcolor: '#533afd',
+            background: GRADIENTS.primary,
             color: '#fff',
-            borderRadius: '4px',
-            width: 40,
-            height: 40,
+            borderRadius: 2,
+            width: 42,
+            height: 42,
             alignSelf: 'flex-end',
             flexShrink: 0,
-            '&:hover': { bgcolor: '#4434d4' },
+            '&:hover': {
+              background: 'linear-gradient(135deg, #4434d4 0%, #6d28d9 100%)',
+              boxShadow: '0 4px 12px rgba(83,58,253,0.3)',
+            },
             '&.Mui-disabled': {
-              bgcolor: 'rgba(255,255,255,0.02)',
-              color: '#64748d',
+              background: 'rgba(0,0,0,0.06)',
+              color: 'text.secondary',
             },
           }}
         >
@@ -402,7 +433,7 @@ function ChatWindow({ messages, onSend, disabled, isEvaluating }) {
         </IconButton>
       </Box>
 
-      {/* 不支持语音的 Snackbar 提示 */}
+      {/* Snackbar */}
       <Snackbar
         open={snackbarOpen}
         autoHideDuration={4000}
@@ -416,8 +447,9 @@ function ChatWindow({ messages, onSend, disabled, isEvaluating }) {
           sx={{
             borderColor: '#b9b9f9',
             color: '#533afd',
-            bgcolor: '#ffffff',
-            borderRadius: '4px',
+            bgcolor: 'background.paper',
+            borderRadius: 2,
+            boxShadow: SHADOWS.light,
             '& .MuiAlert-icon': { color: '#533afd' },
           }}
         >

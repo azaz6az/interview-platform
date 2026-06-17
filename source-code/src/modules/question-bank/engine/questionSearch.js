@@ -35,28 +35,4 @@ export function searchQuestions(questions, filters, favorites = []) {
   });
 }
 
-/**
- * 按岗位分组统计题目数量
- * @param {Array} questions - 题目数组
- * @returns {Object} { positionId: count }
- */
-export function countByPosition(questions) {
-  const counts = {};
-  for (const q of questions) {
-    counts[q.position] = (counts[q.position] || 0) + 1;
-  }
-  return counts;
-}
 
-/**
- * 按难度分组统计题目数量
- * @param {Array} questions - 题目数组
- * @returns {Object} { difficulty: count }
- */
-export function countByDifficulty(questions) {
-  const counts = {};
-  for (const q of questions) {
-    counts[q.difficulty] = (counts[q.difficulty] || 0) + 1;
-  }
-  return counts;
-}

@@ -38,7 +38,7 @@ function ScoreGauge({ score }) {
   return (
     <Box sx={{ position: 'relative', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>
       <svg width={size} height={size} style={{ transform: 'rotate(-90deg)' }}>
-        <circle cx={size / 2} cy={size / 2} r={radius} fill="none" stroke="#e5edf5" strokeWidth={strokeWidth} strokeLinecap="round" />
+        <circle cx={size / 2} cy={size / 2} r={radius} fill="none" stroke={'var(--mui-palette-divider)'} strokeWidth={strokeWidth} strokeLinecap="round" />
         <circle
           cx={size / 2} cy={size / 2} r={radius} fill="none" stroke={color} strokeWidth={strokeWidth}
           strokeLinecap="round" strokeDasharray={circumference} strokeDashoffset={offset}
@@ -49,7 +49,7 @@ function ScoreGauge({ score }) {
         <Typography variant="h3" component="span" sx={{ fontWeight: 300, color, lineHeight: 1, letterSpacing: '-0.64px' }}>
           {clampedScore}
         </Typography>
-        <Typography variant="caption" sx={{ color: '#64748d', mt: 0.5, fontSize: '0.75rem', fontWeight: 300 }}>
+        <Typography variant="caption" sx={{ color: 'text.secondary', mt: 0.5, fontSize: '0.75rem', fontWeight: 300 }}>
           {getColorLabel(clampedScore)}
         </Typography>
       </Box>

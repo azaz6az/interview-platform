@@ -72,6 +72,20 @@ function ChatBubble({ message }) {
         >
           {message.content}
         </Typography>
+        {!isAI && message.duration > 0 && (
+          <Typography
+            variant="caption"
+            sx={{
+              display: 'block',
+              mt: 0.5,
+              fontSize: '0.65rem',
+              color: 'rgba(255,255,255,0.7)',
+              textAlign: 'right',
+            }}
+          >
+            {message.duration}秒
+          </Typography>
+        )}
       </Box>
     </Box>
   );

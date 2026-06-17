@@ -43,7 +43,7 @@ export function analyzeWeaknesses(entries) {
   // 取 Top 3 薄弱环节，推荐练习题
   const top3 = categories.slice(0, 3).map((cat) => {
     const recommended = questionsData
-      .filter((q) => q.category === cat.category || q.position === cat.interviewType)
+      .filter((q) => q.position === cat.interviewType)
       .slice(0, 3);
 
     return {
@@ -63,9 +63,7 @@ export function analyzeWeaknesses(entries) {
 export function getRecommendedQuestions(weakness) {
   return questionsData
     .filter(
-      (q) =>
-        q.category === weakness.category ||
-        q.position === weakness.interviewType
+      (q) => q.position === weakness.interviewType
     )
     .slice(0, 3);
 }

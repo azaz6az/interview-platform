@@ -57,15 +57,7 @@ const POSITION_QUESTIONS = {
   ],
 };
 
-/** 通用追问模板 */
-const FOLLOW_UP_TEMPLATES = [
-  '能否再详细说说其中的具体细节？',
-  '你在这个过程中遇到了什么挑战？是如何解决的？',
-  '如果让你重新做一次，你会有什么不同的做法？',
-  '你能用数据来量化这个成果吗？',
-  '这个项目中最关键的决策点是什么？',
-  '你在这个经历中学到了什么？',
-];
+/** 通用追问模板 — 已移至 followUpStrategy.js */
 
 /**
  * 生成面试问题（async 预留 AI 接口）
@@ -86,8 +78,19 @@ export async function generateQuestion(positionId, round, previousAnswer) {
 /**
  * 同步版本
  */
-export function generateQuestionSync(positionId, round) {
+export function generateQuestionSync(positionId, round, shuffledIndices) {
   const questions = POSITION_QUESTIONS[positionId] || POSITION_QUESTIONS['data-analysis'];
-  const idx = (round - 1) % questions.length;
-  return questions[idx];
+  const idx = shuffledIndices
+    ? shuffledIndices[(round - 1) % shuffledIndices.length]
+    : (round - 1) % questions.length;
+  return questions[idx]?.question || questions[idx] || questions[0].question;
 }
+
+/**
+ * 获取指定岗位的问题列表（供洗牌索引使用）
+ */
+generateQuestionSync.__getQuestions = function(positionId) {
+  return POSITION_QUESTIONS[positionId] || POSITION_QUESTIONS['data-analysis'];
+};
+
+export default POSITION_QUESTIONS;

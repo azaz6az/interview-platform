@@ -14,15 +14,15 @@ import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import ScoreGauge from './ScoreGauge';
 import SuggestionCard from './SuggestionCard';
+import { GRADIENTS, SHADOWS, ACCENT_BG } from '../../../theme/theme';
 
 /**
- * AnalysisResult - Stripe 风格分析结果展示
- * 卡片 6px 圆角 + #e5edf5 边框 + 蓝色调阴影
+ * AnalysisResult - 分析结果展示（视觉增强版）
+ * 顶部绿色渐变条 + 结果状态渐变 + 优化后简历代码块风格
  */
 function AnalysisResult({ result, isAnalyzing, resumeText }) {
   const [copied, setCopied] = useState(false);
 
-  /** 一键复制修改后的简历到剪贴板 */
   const handleCopyResume = async () => {
     if (!result?.modifiedResume) return;
     try {
@@ -49,17 +49,28 @@ function AnalysisResult({ result, isAnalyzing, resumeText }) {
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          borderRadius: '6px',
-          border: '1px solid #e5edf5',
-          boxShadow: 'rgba(23,23,23,0.08) 0px 15px 35px 0px',
+          borderRadius: 3,
+          borderColor: 'divider',
+          position: 'relative',
+          overflow: 'hidden',
+          '&::before': {
+            content: '""',
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            height: 3,
+            background: GRADIENTS.success,
+            borderRadius: '12px 12px 0 0',
+          },
         }}
       >
         <CardContent sx={{ textAlign: 'center', py: 8 }}>
           <CircularProgress size={56} sx={{ mb: 3, color: '#533afd' }} />
-          <Typography variant="h6" sx={{ color: '#533afd', fontWeight: 400, mb: 1 }}>
+          <Typography variant="h6" sx={{ color: '#533afd', fontWeight: 500, mb: 1 }}>
             正在分析适配度...
           </Typography>
-          <Typography variant="body2" sx={{ color: '#64748d', fontWeight: 300 }}>
+          <Typography variant="body2" sx={{ color: 'text.secondary', fontWeight: 300 }}>
             AI 正在对比简历与岗位描述的匹配情况
           </Typography>
         </CardContent>
@@ -75,16 +86,43 @@ function AnalysisResult({ result, isAnalyzing, resumeText }) {
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          borderRadius: '6px',
-          border: '2px dashed #e5edf5',
+          borderRadius: 3,
+          border: '2px dashed',
+          borderColor: 'divider',
+          position: 'relative',
+          overflow: 'hidden',
+          '&::before': {
+            content: '""',
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            height: 3,
+            background: GRADIENTS.success,
+            borderRadius: '12px 12px 0 0',
+          },
         }}
       >
         <CardContent sx={{ textAlign: 'center', py: 8 }}>
-          <AnalyticsIcon sx={{ fontSize: 64, color: '#e5edf5', mb: 2 }} />
-          <Typography variant="h6" sx={{ color: '#64748d', fontWeight: 400, mb: 0.5 }}>
+          <Box
+            sx={{
+              width: 72,
+              height: 72,
+              borderRadius: '50%',
+              bgcolor: ACCENT_BG.green,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              mx: 'auto',
+              mb: 2,
+            }}
+          >
+            <AnalyticsIcon sx={{ fontSize: 36, color: '#15be53' }} />
+          </Box>
+          <Typography variant="h6" sx={{ color: 'text.primary', fontWeight: 500, mb: 0.5 }}>
             Step 3：分析结果
           </Typography>
-          <Typography variant="body2" sx={{ color: '#64748d', fontWeight: 300 }}>
+          <Typography variant="body2" sx={{ color: 'text.secondary', fontWeight: 300 }}>
             请先在左侧输入简历和岗位描述，然后点击"分析适配"按钮
           </Typography>
         </CardContent>
@@ -98,15 +136,26 @@ function AnalysisResult({ result, isAnalyzing, resumeText }) {
         height: '100%',
         display: 'flex',
         flexDirection: 'column',
-        borderRadius: '6px',
-        border: '1px solid #e5edf5',
-        boxShadow: 'rgba(50,50,93,0.25) 0px 30px 45px -30px, rgba(0,0,0,0.1) 0px 18px 36px -18px',
+        borderRadius: 3,
+        borderColor: 'divider',
+        position: 'relative',
+        overflow: 'hidden',
+        '&::before': {
+          content: '""',
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          right: 0,
+          height: 3,
+          background: GRADIENTS.success,
+          borderRadius: '12px 12px 0 0',
+        },
       }}
     >
       <CardContent sx={{ flex: 1, overflow: 'auto', '&:last-child': { pb: 2 } }}>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
           <CheckCircleIcon sx={{ color: '#15be53' }} />
-          <Typography variant="h6" component="h2" sx={{ fontWeight: 500, color: '#061b31' }}>
+          <Typography variant="h6" component="h2" sx={{ fontWeight: 600, color: 'text.primary' }}>
             分析结果
           </Typography>
         </Box>
@@ -115,7 +164,7 @@ function AnalysisResult({ result, isAnalyzing, resumeText }) {
           <ScoreGauge score={result.score} />
         </Box>
 
-        <Typography variant="subtitle2" sx={{ fontWeight: 500, mb: 1.5, color: '#061b31' }}>
+        <Typography variant="subtitle2" sx={{ fontWeight: 600, mb: 1.5, color: 'text.primary' }}>
           修改建议
         </Typography>
 
@@ -123,10 +172,10 @@ function AnalysisResult({ result, isAnalyzing, resumeText }) {
           <SuggestionCard key={index} suggestion={suggestion} index={index} />
         ))}
 
-        <Divider sx={{ my: 3, borderColor: '#e5edf5' }} />
+        <Divider sx={{ my: 3, borderColor: 'divider' }} />
 
         <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 1.5 }}>
-          <Typography variant="subtitle2" sx={{ fontWeight: 500, color: '#061b31' }}>
+          <Typography variant="subtitle2" sx={{ fontWeight: 600, color: 'text.primary' }}>
             优化后的简历
           </Typography>
           <Box sx={{ display: 'flex', gap: 1 }}>
@@ -138,7 +187,7 @@ function AnalysisResult({ result, isAnalyzing, resumeText }) {
                 clickable
                 size="small"
                 sx={{
-                  borderRadius: '4px',
+                  borderRadius: 1.5,
                   fontWeight: 500,
                   ...(copied
                     ? {
@@ -159,16 +208,16 @@ function AnalysisResult({ result, isAnalyzing, resumeText }) {
 
         <Box
           sx={{
-            backgroundColor: '#fafbfc',
-            borderRadius: '4px',
-            p: 2,
+            backgroundColor: '#f8fafc',
+            borderRadius: 2,
+            p: 2.5,
             whiteSpace: 'pre-wrap',
             fontSize: '0.9rem',
             lineHeight: 1.8,
             maxHeight: 400,
             overflow: 'auto',
-            border: '1px solid #e5edf5',
-            color: '#061b31',
+            borderColor: 'divider',
+            color: 'text.primary',
             fontWeight: 300,
           }}
         >

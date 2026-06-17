@@ -11,44 +11,64 @@ import {
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import { DIFFICULTY_LEVELS } from '../../../shared/constants';
+import { SHADOWS } from '../../../theme/theme';
+
+/** 难度对应的渐变色条 */
+const DIFFICULTY_GRADIENTS = {
+  easy: 'linear-gradient(90deg, #15be53, #10b981)',
+  medium: 'linear-gradient(90deg, #3b82f6, #6366f1)',
+  hard: 'linear-gradient(90deg, #ea2261, #f43f5e)',
+};
 
 /**
- * QuestionCard - Stripe 风格题目卡片
- * 白底 + #e5edf5 边框 + 6px 圆角 + 蓝色调阴影
- * Chip 使用 Stripe pill 风格
- * 收藏按钮使用 Stripe Purple/Ruby
+ * QuestionCard - 题目卡片（视觉增强版）
+ * 顶部难度色条 + hover 浮动 + 彩色阴影
  */
 function QuestionCard({ question, isFavorite, onToggleFavorite, onViewDetail }) {
   const difficulty = DIFFICULTY_LEVELS.find((d) => d.id === question.difficulty) || DIFFICULTY_LEVELS[0];
+  const gradientBar = DIFFICULTY_GRADIENTS[question.difficulty] || DIFFICULTY_GRADIENTS.easy;
 
   return (
     <Card
       sx={{
         cursor: 'pointer',
-        border: '1px solid #e5edf5',
-        borderRadius: '6px',
-        boxShadow: 'rgba(23,23,23,0.08) 0px 15px 35px 0px',
-        transition: 'all 0.2s ease',
+        border: '1px solid',
+        borderColor: 'divider',
+        borderRadius: 3,
+        position: 'relative',
+        overflow: 'hidden',
+        transition: 'all 0.25s cubic-bezier(0.4, 0, 0.2, 1)',
+        '&::before': {
+          content: '""',
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          right: 0,
+          height: 3,
+          background: gradientBar,
+          borderRadius: '12px 12px 0 0',
+        },
         '&:hover': {
-          boxShadow: 'rgba(50,50,93,0.25) 0px 30px 45px -30px, rgba(0,0,0,0.1) 0px 18px 36px -18px',
-          transform: 'translateY(-1px)',
+          transform: 'translateY(-3px)',
+          boxShadow: SHADOWS.light,
+          borderColor: 'transparent',
         },
       }}
       onClick={() => onViewDetail(question)}
     >
       <CardContent sx={{ '&:last-child': { pb: 2 } }}>
-        {/* 标签行 — Stripe pill Chip */}
+        {/* 标签行 */}
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, mb: 1, flexWrap: 'wrap' }}>
           <Chip
             label={difficulty.label}
             size="small"
             sx={{
-              bgcolor: difficulty.color + '18',
+              bgcolor: difficulty.color + '15',
               color: difficulty.color,
-              fontWeight: 500,
-              fontSize: '0.7rem',
+              fontWeight: 600,
+              fontSize: '0.68rem',
               height: 22,
-              borderRadius: '4px',
+              borderRadius: 1.5,
             }}
           />
           <Chip
@@ -56,11 +76,11 @@ function QuestionCard({ question, isFavorite, onToggleFavorite, onViewDetail }) 
             size="small"
             variant="outlined"
             sx={{
-              fontSize: '0.7rem',
+              fontSize: '0.68rem',
               height: 22,
-              borderRadius: '4px',
-              borderColor: '#e5edf5',
-              color: '#64748d',
+              borderRadius: 1.5,
+              borderColor: 'divider',
+              color: 'text.secondary',
             }}
           />
           <Box sx={{ ml: 'auto' }}>
@@ -72,8 +92,9 @@ function QuestionCard({ question, isFavorite, onToggleFavorite, onViewDetail }) 
                   onToggleFavorite(question.id);
                 }}
                 sx={{
-                  color: isFavorite ? '#ea2261' : '#64748d',
-                  '&:hover': { color: '#ea2261' },
+                  color: isFavorite ? '#ea2261' : 'text.secondary',
+                  transition: 'all 0.2s ease',
+                  '&:hover': { color: '#ea2261', transform: 'scale(1.15)' },
                 }}
               >
                 {isFavorite ? <FavoriteIcon fontSize="small" /> : <FavoriteBorderIcon fontSize="small" />}
@@ -88,7 +109,7 @@ function QuestionCard({ question, isFavorite, onToggleFavorite, onViewDetail }) 
           sx={{
             lineHeight: 1.7,
             fontWeight: 300,
-            color: '#061b31',
+            color: 'text.primary',
             display: '-webkit-box',
             WebkitLineClamp: 3,
             WebkitBoxOrient: 'vertical',

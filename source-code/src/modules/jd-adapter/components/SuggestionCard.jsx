@@ -81,14 +81,14 @@ function SuggestionCard({ suggestion, index }) {
         />
       </Box>
 
-      <Typography variant="body2" sx={{ ml: 3.5, mb: 0.5, color: '#061b31', fontWeight: 300 }}>
+      <Typography variant="body2" sx={{ ml: 3.5, mb: 0.5, color: 'text.primary', fontWeight: 300 }}>
         {suggestion.description}
       </Typography>
 
       {(suggestion.original || suggestion.suggested) && (
         <Box sx={{ ml: 3.5, mt: 1 }}>
           {suggestion.original && (
-            <Box sx={{ fontSize: '0.8rem', color: '#64748d', textDecoration: 'line-through', mb: 0.25 }}>
+            <Box sx={{ fontSize: '0.8rem', color: 'text.secondary', textDecoration: 'line-through', mb: 0.25 }}>
               原文：{suggestion.original}
             </Box>
           )}

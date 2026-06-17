@@ -8,14 +8,11 @@ import {
 } from '@mui/material';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import { POSITIONS, DIFFICULTY_LEVELS } from '../../../shared/constants';
+import { GRADIENTS } from '../../../theme/theme';
 
 /**
- * QuestionFilter - Stripe 风格题目筛选器
- * ToggleButton 改为 Stripe pill 风格
- * 收藏 Chip 使用 Stripe pill
- * @param {Object} props
- * @param {Object} props.filters - 当前筛选条件 { position, difficulty, favoritesOnly }
- * @param {Function} props.onFilterChange - 筛选变更回调
+ * QuestionFilter - 题目筛选器（视觉增强版）
+ * 选中态渐变底色 + 平滑过渡
  */
 function QuestionFilter({ filters, onFilterChange }) {
   const handlePositionChange = (_e, value) => {
@@ -30,11 +27,32 @@ function QuestionFilter({ filters, onFilterChange }) {
     onFilterChange({ favoritesOnly: !filters.favoritesOnly });
   };
 
+  /** 统一的 ToggleButton 样式 */
+  const toggleSx = {
+    px: 1.5,
+    py: 0.5,
+    fontSize: '0.75rem',
+    borderRadius: 1.5,
+    fontWeight: 400,
+    fontFamily: '"Inter", -apple-system, BlinkMacSystemFont, sans-serif',
+    color: 'text.secondary',
+    transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
+    '&.Mui-selected': {
+      background: GRADIENTS.primary,
+      color: '#fff',
+      border: 'none',
+      boxShadow: '0 2px 8px rgba(83,58,253,0.2)',
+      '&:hover': {
+        background: 'linear-gradient(135deg, #4434d4 0%, #6d28d9 100%)',
+      },
+    },
+  };
+
   return (
-    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mb: 2 }}>
-      {/* 岗位筛选 — Stripe pill ToggleButton */}
+    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mb: 2.5 }}>
+      {/* 岗位筛选 */}
       <Box>
-        <Typography variant="subtitle2" sx={{ mb: 1, fontWeight: 500, color: '#273951' }}>
+        <Typography variant="subtitle2" sx={{ mb: 1, fontWeight: 600, color: 'text.secondary' }}>
           岗位方向
         </Typography>
         <ToggleButtonGroup
@@ -44,53 +62,20 @@ function QuestionFilter({ filters, onFilterChange }) {
           size="small"
           sx={{ flexWrap: 'wrap', gap: 0.5 }}
         >
-          <ToggleButton
-            value=""
-            sx={{
-              px: 1.5,
-              py: 0.5,
-              fontSize: '0.75rem',
-              borderRadius: '4px',
-              fontWeight: 400,
-              fontFamily: '"Inter", -apple-system, BlinkMacSystemFont, sans-serif',
-              color: '#64748d',
-              '&.Mui-selected': {
-                bgcolor: 'rgba(83,58,253,0.08)',
-                color: '#533afd',
-                border: '1px solid #b9b9f9',
-              },
-            }}
-          >
+          <ToggleButton value="" sx={toggleSx}>
             全部
           </ToggleButton>
           {POSITIONS.map((pos) => (
-            <ToggleButton
-              key={pos.id}
-              value={pos.id}
-              sx={{
-                px: 1.5,
-                py: 0.5,
-                fontSize: '0.75rem',
-                borderRadius: '4px',
-                fontWeight: 400,
-                fontFamily: '"Inter", -apple-system, BlinkMacSystemFont, sans-serif',
-                color: '#64748d',
-                '&.Mui-selected': {
-                  bgcolor: 'rgba(83,58,253,0.08)',
-                  color: '#533afd',
-                  border: '1px solid #b9b9f9',
-                },
-              }}
-            >
+            <ToggleButton key={pos.id} value={pos.id} sx={toggleSx}>
               {pos.label}
             </ToggleButton>
           ))}
         </ToggleButtonGroup>
       </Box>
 
-      {/* 难度筛选 — Stripe pill ToggleButton */}
+      {/* 难度筛选 */}
       <Box>
-        <Typography variant="subtitle2" sx={{ mb: 1, fontWeight: 500, color: '#273951' }}>
+        <Typography variant="subtitle2" sx={{ mb: 1, fontWeight: 600, color: 'text.secondary' }}>
           难度等级
         </Typography>
         <ToggleButtonGroup
@@ -99,51 +84,18 @@ function QuestionFilter({ filters, onFilterChange }) {
           onChange={handleDifficultyChange}
           size="small"
         >
-          <ToggleButton
-            value=""
-            sx={{
-              px: 1.5,
-              py: 0.5,
-              fontSize: '0.75rem',
-              borderRadius: '4px',
-              fontWeight: 400,
-              fontFamily: '"Inter", -apple-system, BlinkMacSystemFont, sans-serif',
-              color: '#64748d',
-              '&.Mui-selected': {
-                bgcolor: 'rgba(83,58,253,0.08)',
-                color: '#533afd',
-                border: '1px solid #b9b9f9',
-              },
-            }}
-          >
+          <ToggleButton value="" sx={toggleSx}>
             全部
           </ToggleButton>
           {DIFFICULTY_LEVELS.map((d) => (
-            <ToggleButton
-              key={d.id}
-              value={d.id}
-              sx={{
-                px: 1.5,
-                py: 0.5,
-                fontSize: '0.75rem',
-                borderRadius: '4px',
-                fontWeight: 400,
-                fontFamily: '"Inter", -apple-system, BlinkMacSystemFont, sans-serif',
-                color: '#64748d',
-                '&.Mui-selected': {
-                  bgcolor: 'rgba(83,58,253,0.08)',
-                  color: '#533afd',
-                  border: '1px solid #b9b9f9',
-                },
-              }}
-            >
+            <ToggleButton key={d.id} value={d.id} sx={toggleSx}>
               {d.label}
             </ToggleButton>
           ))}
         </ToggleButtonGroup>
       </Box>
 
-      {/* 我的收藏筛选 — Stripe pill Chip */}
+      {/* 我的收藏 */}
       <Box>
         <Chip
           icon={<FavoriteIcon />}
@@ -151,21 +103,24 @@ function QuestionFilter({ filters, onFilterChange }) {
           onClick={handleFavoritesToggle}
           sx={{
             cursor: 'pointer',
-            borderRadius: '4px',
+            borderRadius: 1.5,
             fontWeight: 500,
             fontFamily: '"Inter", -apple-system, BlinkMacSystemFont, sans-serif',
             fontSize: '0.75rem',
+            transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
             ...(filters.favoritesOnly
               ? {
-                  bgcolor: 'rgba(21,190,83,0.15)',
-                  color: '#108c3d',
-                  border: '1px solid rgba(21,190,83,0.3)',
+                  background: GRADIENTS.success,
+                  color: '#fff',
+                  border: 'none',
+                  boxShadow: '0 2px 8px rgba(21,190,83,0.2)',
+                  '& .MuiChip-icon': { color: '#fff' },
                 }
               : {
-                  bgcolor: '#ffffff',
-                  color: '#64748d',
-                  border: '1px solid #e5edf5',
-                  variant: 'outlined',
+                  bgcolor: 'background.paper',
+                  color: 'text.secondary',
+                  border: '1px solid',
+                  borderColor: 'divider',
                 }),
           }}
         />

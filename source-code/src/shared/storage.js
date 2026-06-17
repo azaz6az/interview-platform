@@ -32,8 +32,8 @@ export function saveToStorage(key, value, silentOnQuotaError = false) {
   try {
     const serialized = typeof value === 'string' ? value : JSON.stringify(value);
     localStorage.setItem(key, serialized);
+    return true;
   } catch (e) {
-    // QuotaExceededError - localStorage 超限
     if (e.name === 'QuotaExceededError' || e.code === 22) {
       if (!silentOnQuotaError) {
         console.warn(`localStorage 超限，无法存储 [${key}]。数据可能过大，跳过存储。`);
@@ -41,6 +41,7 @@ export function saveToStorage(key, value, silentOnQuotaError = false) {
     } else {
       console.warn(`保存到 localStorage 失败 [${key}]:`, e.message);
     }
+    return false;
   }
 }
 
@@ -74,10 +75,10 @@ export const loadJD = () => loadFromStorage(STORAGE_KEYS.JD, '');
 export const saveJDImage = (imageData) => {
   if (!imageData) {
     removeFromStorage(STORAGE_KEYS.JD_IMAGE);
-    return;
+    return true;
   }
-  // 图片 base64 数据可能很大，超限时静默失败（只存文本不存图片）
-  saveToStorage(STORAGE_KEYS.JD_IMAGE, imageData, true);
+  const success = saveToStorage(STORAGE_KEYS.JD_IMAGE, imageData, true);
+  return success;
 };
 export const loadJDImage = () => loadFromStorage(STORAGE_KEYS.JD_IMAGE, null);
 

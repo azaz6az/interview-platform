@@ -1,34 +1,26 @@
 import React from 'react';
 import {
-  Box,
-  Typography,
-  List,
-  ListItem,
-  ListItemIcon,
-  ListItemText,
-  Chip,
+  Box, Typography, List, ListItem, ListItemIcon, ListItemText, Chip,
 } from '@mui/material';
 import WarningAmberIcon from '@mui/icons-material/WarningAmber';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import { POSITIONS } from '../../../shared/constants';
+import EmptyState from '../../../shared/EmptyState';
 
-/**
- * WeaknessAnalysis - Stripe 风格薄弱环节分析面板
- * Chip 使用 Stripe pill 风格
- * 颜色使用 Stripe 体系
- */
 function WeaknessAnalysis({ weaknesses }) {
   if (!weaknesses || weaknesses.length === 0) {
     return (
-      <Box sx={{ textAlign: 'center', py: 4, color: '#64748d' }}>
-        <Typography variant="body2" sx={{ fontWeight: 300 }}>暂无数据，请先创建复盘记录</Typography>
-      </Box>
+      <EmptyState
+        icon="🎯"
+        title="暂无薄弱环节数据"
+        description="创建复盘记录后，系统会自动分析你的薄弱环节"
+      />
     );
   }
 
   return (
     <Box>
-      <Typography variant="subtitle1" sx={{ fontWeight: 500, mb: 1, color: '#061b31' }}>
+      <Typography variant="subtitle1" sx={{ fontWeight: 500, mb: 1, color: 'text.primary' }}>
         Top 3 薄弱环节
       </Typography>
       <List>
@@ -42,7 +34,7 @@ function WeaknessAnalysis({ weaknesses }) {
               <ListItemText
                 primary={
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, flexWrap: 'wrap' }}>
-                    <Typography variant="body2" sx={{ fontWeight: 500, color: '#061b31' }}>
+                    <Typography variant="body2" sx={{ fontWeight: 500, color: 'text.primary' }}>
                       {w.category}
                     </Typography>
                     <Chip
@@ -61,7 +53,7 @@ function WeaknessAnalysis({ weaknesses }) {
                   </Box>
                 }
                 secondary={
-                  <Typography variant="caption" sx={{ color: '#64748d', fontWeight: 300 }}>
+                  <Typography variant="caption" sx={{ color: 'text.secondary', fontWeight: 300 }}>
                     平均评分 {w.avgScore}/5 · 共 {w.count} 次
                   </Typography>
                 }
@@ -74,7 +66,7 @@ function WeaknessAnalysis({ weaknesses }) {
       {/* 推荐练习题 */}
       {weaknesses.some((w) => w.recommendedQuestions && w.recommendedQuestions.length > 0) && (
         <Box sx={{ mt: 2 }}>
-          <Typography variant="subtitle2" sx={{ fontWeight: 500, mb: 1, color: '#061b31' }}>
+          <Typography variant="subtitle2" sx={{ fontWeight: 500, mb: 1, color: 'text.primary' }}>
             推荐练习
           </Typography>
           {weaknesses.map(
@@ -92,7 +84,7 @@ function WeaknessAnalysis({ weaknesses }) {
                   }}
                 >
                   <ArrowForwardIcon sx={{ fontSize: 14, color: '#533afd', mt: 0.3 }} />
-                  <Typography variant="caption" sx={{ lineHeight: 1.5, color: '#64748d', fontWeight: 300 }}>
+                  <Typography variant="caption" sx={{ lineHeight: 1.5, color: 'text.secondary', fontWeight: 300 }}>
                     {q.question.substring(0, 60)}...
                   </Typography>
                 </Box>

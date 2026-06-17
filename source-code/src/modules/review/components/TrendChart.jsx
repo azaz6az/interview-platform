@@ -1,45 +1,32 @@
 import React from 'react';
 import { Box, Typography } from '@mui/material';
 import {
-  LineChart,
-  Line,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
+  LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
 } from 'recharts';
+import EmptyState from '../../../shared/EmptyState';
 
-/**
- * TrendChart - Stripe 风格感受评分趋势图
- * 线条使用 Stripe Purple #533afd
- * 网格使用 #e5edf5
- */
 function TrendChart({ data }) {
   if (!data || data.length === 0) {
-    return (
-      <Box sx={{ textAlign: 'center', py: 4, color: '#64748d' }}>
-        <Typography variant="body2" sx={{ fontWeight: 300 }}>暂无数据</Typography>
-      </Box>
-    );
+    return <EmptyState icon="📈" title="暂无趋势数据" description="创建复盘记录后，这里会显示你的感受评分趋势" />;
   }
 
   return (
     <Box>
-      <Typography variant="subtitle1" sx={{ fontWeight: 500, mb: 1, color: '#061b31' }}>
+      <Typography variant="subtitle1" sx={{ fontWeight: 500, mb: 1, color: 'text.primary' }}>
         感受评分趋势
       </Typography>
       <ResponsiveContainer width="100%" height={240}>
         <LineChart data={data} margin={{ top: 5, right: 20, bottom: 5, left: 0 }}>
-          <CartesianGrid strokeDasharray="3 3" stroke="#e5edf5" />
-          <XAxis dataKey="date" tick={{ fontSize: 11, fill: '#64748d' }} />
-          <YAxis domain={[1, 5]} ticks={[1, 2, 3, 4, 5]} tick={{ fontSize: 11, fill: '#64748d' }} />
+          <CartesianGrid strokeDasharray="3 3" stroke={'var(--mui-palette-divider)'} />
+          <XAxis dataKey="date" tick={{ fontSize: 11, fill: 'var(--mui-palette-text-secondary)' }} />
+          <YAxis domain={[1, 5]} ticks={[1, 2, 3, 4, 5]} tick={{ fontSize: 11, fill: 'var(--mui-palette-text-secondary)' }} />
           <Tooltip
             formatter={(value, name) => [`${value} 分`, name === 'avgScore' ? '平均评分' : name]}
             labelFormatter={(label) => `日期: ${label}`}
             contentStyle={{
               borderRadius: '4px',
-              border: '1px solid #e5edf5',
+              border: '1px solid',
+              borderColor: 'var(--mui-palette-divider)',
               boxShadow: 'rgba(23,23,23,0.08) 0px 15px 35px 0px',
               fontFamily: '"Inter", -apple-system, BlinkMacSystemFont, sans-serif',
             }}

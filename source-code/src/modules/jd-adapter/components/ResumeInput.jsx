@@ -15,19 +15,15 @@ import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import CloseIcon from '@mui/icons-material/Close';
 import InsertDriveFileIcon from '@mui/icons-material/InsertDriveFile';
 import { parseResumeFile, getAcceptedFileTypesString, formatFileSize } from '../engine/fileParser';
+import { GRADIENTS, ACCENT_BG } from '../../../theme/theme';
 
 /**
- * ResumeInput - 简历输入组件（增强版：支持文件上传 + 文本粘贴）
- * @param {Object} props
- * @param {string} props.value - 简历文本
- * @param {Function} props.onChange - 文本变化回调
- * @param {Function} props.onAnalyze - 分析按钮回调
- * @param {boolean} props.isAnalyzing - 是否正在分析
+ * ResumeInput - 简历输入组件（视觉增强版）
+ * 顶部蓝紫色条 + 图标渐变底色 + 入场动画
  */
 function ResumeInput({ value, onChange, onAnalyze, isAnalyzing }) {
   const charCount = value.length;
 
-  /** 文件上传相关状态 */
   const [uploadedFile, setUploadedFile] = useState(null);
   const [parseProgress, setParseProgress] = useState(0);
   const [isParsing, setIsParsing] = useState(false);
@@ -36,9 +32,7 @@ function ResumeInput({ value, onChange, onAnalyze, isAnalyzing }) {
 
   const fileInputRef = useRef(null);
 
-  /** 处理文件上传（点击或拖拽） */
   const handleFileUpload = useCallback(async (file) => {
-    // 校验文件类型
     const acceptedTypes = getAcceptedFileTypesString();
     const ext = file.name.split('.').pop().toLowerCase();
     if (!['pdf', 'docx'].includes(ext)) {
@@ -46,19 +40,16 @@ function ResumeInput({ value, onChange, onAnalyze, isAnalyzing }) {
       return;
     }
 
-    // 清空之前的错误提示
     setParseError('');
     setIsParsing(true);
     setParseProgress(10);
     setUploadedFile({ name: file.name, size: file.size });
 
     try {
-      // 模拟进度更新（解析过程无法精确获取进度，用阶段性模拟）
       setParseProgress(30);
       const text = await parseResumeFile(file);
       setParseProgress(90);
 
-      // 将提取的文本填充到文本框
       if (text.trim()) {
         onChange(text);
         setParseProgress(100);
@@ -75,7 +66,6 @@ function ResumeInput({ value, onChange, onAnalyze, isAnalyzing }) {
     }
   }, [onChange]);
 
-  /** 拖拽事件处理 */
   const handleDragOver = useCallback((e) => {
     e.preventDefault();
     e.stopPropagation();
@@ -92,31 +82,26 @@ function ResumeInput({ value, onChange, onAnalyze, isAnalyzing }) {
     e.preventDefault();
     e.stopPropagation();
     setIsDragOver(false);
-
     const files = e.dataTransfer.files;
     if (files.length > 0) {
       handleFileUpload(files[0]);
     }
   }, [handleFileUpload]);
 
-  /** 点击上传区域触发文件选择 */
   const handleClickUploadArea = useCallback(() => {
     if (!isParsing && fileInputRef.current) {
       fileInputRef.current.click();
     }
   }, [isParsing]);
 
-  /** 文件选择框 change 事件 */
   const handleFileInputChange = useCallback((e) => {
     const files = e.target.files;
     if (files.length > 0) {
       handleFileUpload(files[0]);
     }
-    // 重置 input value 以便同一文件可以再次选择
     e.target.value = '';
   }, [handleFileUpload]);
 
-  /** 删除已上传文件（仅清除上传状态，不清除已填充的文本） */
   const handleRemoveFile = useCallback(() => {
     setUploadedFile(null);
     setParseError('');
@@ -128,9 +113,23 @@ function ResumeInput({ value, onChange, onAnalyze, isAnalyzing }) {
         height: '100%',
         display: 'flex',
         flexDirection: 'column',
-        border: '1px solid #e5edf5',
-        borderRadius: '6px',
-        boxShadow: 'rgba(23,23,23,0.08) 0px 15px 35px 0px',
+        borderColor: 'divider',
+        borderRadius: 3,
+        position: 'relative',
+        overflow: 'hidden',
+        '&::before': {
+          content: '""',
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          right: 0,
+          height: 3,
+          background: GRADIENTS.cool,
+          borderRadius: '12px 12px 0 0',
+        },
+        '&:hover': {
+          boxShadow: 'rgba(83,58,253,0.08) 0px 8px 24px -4px',
+        },
       }}
     >
       <CardContent
@@ -142,13 +141,26 @@ function ResumeInput({ value, onChange, onAnalyze, isAnalyzing }) {
         }}
       >
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
-          <DescriptionIcon sx={{ color: '#533afd' }} />
-          <Typography variant="h6" component="h2" sx={{ fontWeight: 500, color: '#061b31' }}>
+          <Box
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              width: 32,
+              height: 32,
+              borderRadius: 1.5,
+              bgcolor: ACCENT_BG.blue,
+              color: '#3b82f6',
+            }}
+          >
+            <DescriptionIcon sx={{ fontSize: 18 }} />
+          </Box>
+          <Typography variant="h6" component="h2" sx={{ fontWeight: 600, color: 'text.primary', fontSize: '0.95rem' }}>
             Step 1：粘贴简历
           </Typography>
         </Box>
 
-        {/* ===== 文件上传区域 ===== */}
+        {/* 文件上传区域 */}
         {!uploadedFile && !isParsing && (
           <Box
             onDragOver={handleDragOver}
@@ -157,9 +169,9 @@ function ResumeInput({ value, onChange, onAnalyze, isAnalyzing }) {
             onClick={handleClickUploadArea}
             sx={{
               border: '2px dashed',
-              borderColor: isDragOver ? '#533afd' : '#e5edf5',
-              borderRadius: '4px',
-              backgroundColor: isDragOver ? 'rgba(83,58,253,0.04)' : '#fafbfc',
+              borderColor: isDragOver ? '#533afd' : 'divider',
+              borderRadius: 2,
+              backgroundColor: isDragOver ? 'rgba(83,58,253,0.04)' : 'action.hover',
               p: 3,
               mb: 2,
               textAlign: 'center',
@@ -178,8 +190,8 @@ function ResumeInput({ value, onChange, onAnalyze, isAnalyzing }) {
               onChange={handleFileInputChange}
               style={{ display: 'none' }}
             />
-            <CloudUploadIcon sx={{ fontSize: 40, color: isDragOver ? '#533afd' : '#64748d', mb: 1 }} />
-            <Typography variant="body1" sx={{ fontWeight: 400, color: isDragOver ? '#533afd' : '#64748d' }}>
+            <CloudUploadIcon sx={{ fontSize: 40, color: isDragOver ? '#533afd' : 'text.secondary', mb: 1 }} />
+            <Typography variant="body1" sx={{ fontWeight: 400, color: isDragOver ? '#533afd' : 'text.secondary' }}>
               {isDragOver ? '松开即可上传' : '拖拽或点击上传简历文件'}
             </Typography>
             <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
@@ -188,7 +200,7 @@ function ResumeInput({ value, onChange, onAnalyze, isAnalyzing }) {
           </Box>
         )}
 
-        {/* ===== 上传中/解析进度 ===== */}
+        {/* 上传中/解析进度 */}
         {isParsing && (
           <Box sx={{ mb: 2 }}>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
@@ -204,7 +216,14 @@ function ResumeInput({ value, onChange, onAnalyze, isAnalyzing }) {
               <LinearProgress
                 variant="determinate"
                 value={parseProgress}
-                sx={{ flex: 1, borderRadius: 1, height: 6 }}
+                sx={{
+                  flex: 1,
+                  borderRadius: 1,
+                  height: 6,
+                  '& .MuiLinearProgress-bar': {
+                    background: GRADIENTS.primary,
+                  },
+                }}
               />
               <Typography variant="body2" sx={{ color: '#533afd', fontWeight: 400 }}>
                 解析中...
@@ -213,7 +232,7 @@ function ResumeInput({ value, onChange, onAnalyze, isAnalyzing }) {
           </Box>
         )}
 
-        {/* ===== 上传成功后文件信息 ===== */}
+        {/* 上传成功后文件信息 */}
         {uploadedFile && !isParsing && !parseError && (
           <Box
             sx={{
@@ -222,7 +241,7 @@ function ResumeInput({ value, onChange, onAnalyze, isAnalyzing }) {
               gap: 1,
               mb: 2,
               p: 1.5,
-              borderRadius: 1,
+              borderRadius: 2,
               backgroundColor: 'rgba(21,190,83,0.08)',
               border: '1px solid rgba(21,190,83,0.2)',
             }}
@@ -245,18 +264,14 @@ function ResumeInput({ value, onChange, onAnalyze, isAnalyzing }) {
           </Box>
         )}
 
-        {/* ===== 解析失败提示 ===== */}
+        {/* 解析失败提示 */}
         {parseError && (
-          <Alert
-            severity="error"
-            onClose={() => setParseError('')}
-            sx={{ mb: 2 }}
-          >
+          <Alert severity="error" onClose={() => setParseError('')} sx={{ mb: 2, borderRadius: 2 }}>
             {parseError}
           </Alert>
         )}
 
-        <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+        <Typography variant="body2" color="text.secondary" sx={{ mb: 2, fontWeight: 300 }}>
           将你的简历内容粘贴到下方文本框中，支持纯文本格式
         </Typography>
 
@@ -288,7 +303,7 @@ function ResumeInput({ value, onChange, onAnalyze, isAnalyzing }) {
             label={`${charCount} 字`}
             size="small"
             sx={{
-              borderRadius: '4px',
+              borderRadius: 1.5,
               fontWeight: 500,
               fontSize: '0.7rem',
               ...(charCount > 0
@@ -298,9 +313,10 @@ function ResumeInput({ value, onChange, onAnalyze, isAnalyzing }) {
                     border: '1px solid #b9b9f9',
                   }
                 : {
-                    bgcolor: '#ffffff',
-                    color: '#64748d',
-                    border: '1px solid #e5edf5',
+                    bgcolor: 'background.paper',
+                    color: 'text.secondary',
+                    border: '1px solid',
+                    borderColor: 'divider',
                   }),
             }}
           />

@@ -74,7 +74,17 @@ export function JdAdapterProvider({ children }) {
   /** 更新 JD 截图 */
   const setJdImage = useCallback((imageData) => {
     dispatch({ type: ACTION_TYPES.SET_JD_IMAGE, payload: imageData });
-    saveJDImage(imageData);
+    if (imageData) {
+      const success = saveJDImage(imageData);
+      if (!success) {
+        dispatch({
+          type: ACTION_TYPES.SET_SNACKBAR,
+          payload: { open: true, message: '截图保存失败：存储空间已满，刷新后图片将丢失。建议清理其他数据。', severity: 'warning' },
+        });
+      }
+    } else {
+      saveJDImage(null);
+    }
   }, []);
 
   /** 执行分析 */

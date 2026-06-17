@@ -67,10 +67,10 @@ function ReviewForm({ open, editingEntry, onSave, onClose }) {
 
   return (
     <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
-      <DialogTitle sx={{ fontWeight: 500, color: '#061b31' }}>
+      <DialogTitle sx={{ fontWeight: 500, color: 'text.primary' }}>
         {editingEntry ? '编辑复盘' : '新建复盘'}
       </DialogTitle>
-      <DialogContent dividers sx={{ borderColor: '#e5edf5' }}>
+      <DialogContent dividers sx={{ borderColor: 'divider' }}>
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, pt: 1 }}>
           {/* 面试类型 */}
           <TextField
@@ -141,7 +141,7 @@ function ReviewForm({ open, editingEntry, onSave, onClose }) {
 
           {/* 感受评分 */}
           <Box>
-            <Typography variant="subtitle2" sx={{ mb: 1, color: '#273951', fontWeight: 500 }}>
+            <Typography variant="subtitle2" sx={{ mb: 1, color: 'text.secondary', fontWeight: 500 }}>
               感受评分
             </Typography>
             <FeelingRating value={form.feeling} onChange={(v) => updateField('feeling', v)} />
@@ -153,7 +153,7 @@ function ReviewForm({ open, editingEntry, onSave, onClose }) {
           onClick={onClose}
           sx={{
             borderRadius: '4px',
-            color: '#64748d',
+            color: 'text.secondary',
           }}
         >
           取消
@@ -166,7 +166,7 @@ function ReviewForm({ open, editingEntry, onSave, onClose }) {
             borderRadius: '4px',
             bgcolor: '#533afd',
             '&:hover': { bgcolor: '#4434d4' },
-            '&.Mui-disabled': { bgcolor: 'rgba(255,255,255,0.02)', color: '#64748d' },
+            '&.Mui-disabled': { bgcolor: 'rgba(255,255,255,0.02)', color: 'text.secondary' },
             fontWeight: 500,
           }}
         >

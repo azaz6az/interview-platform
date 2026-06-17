@@ -10,24 +10,19 @@ import {
 } from '@mui/material';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import { INTERVIEW_TYPES } from '../../../shared/constants';
+import EmptyState from '../../../shared/EmptyState';
 
 /**
  * ReviewTimeline - Stripe 风格复盘时间线
- * 使用 Stripe 风格的竖线 + 圆点标记
- * Chip 使用 Stripe pill 风格
- * @param {Object} props
- * @param {Array} props.entries - 复盘条目数组
- * @param {Function} props.onEdit - 编辑回调
- * @param {Function} props.onDelete - 删除回调
  */
 function ReviewTimeline({ entries, onEdit, onDelete }) {
   if (entries.length === 0) {
     return (
-      <Box sx={{ textAlign: 'center', py: 4, color: '#64748d' }}>
-        <Typography variant="body2" sx={{ fontWeight: 300 }}>
-          暂无复盘记录，点击"新建复盘"开始记录
-        </Typography>
-      </Box>
+      <EmptyState
+        icon="📝"
+        title="暂无复盘记录"
+        description="完成面试后，记录你的感受和改进点"
+      />
     );
   }
 
@@ -53,7 +48,7 @@ function ReviewTimeline({ entries, onEdit, onDelete }) {
           top: 8,
           bottom: 8,
           width: 2,
-          bgcolor: '#e5edf5',
+          bgcolor: 'divider',
           borderRadius: 1,
         }}
       />
@@ -75,8 +70,9 @@ function ReviewTimeline({ entries, onEdit, onDelete }) {
                   width: 10,
                   height: 10,
                   borderRadius: '50%',
-                  bgcolor: idx === 0 ? '#533afd' : '#e5edf5',
-                  border: idx === 0 ? '2px solid #533afd' : '2px solid #e5edf5',
+                  bgcolor: idx === 0 ? '#533afd' : 'divider',
+                  border: idx === 0 ? '2px solid #533afd' : '2px solid',
+                  borderColor: 'divider',
                   zIndex: 1,
                 }}
               />
@@ -91,7 +87,7 @@ function ReviewTimeline({ entries, onEdit, onDelete }) {
                 <ListItemText
                   primary={
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flexWrap: 'wrap' }}>
-                      <Typography variant="subtitle2" sx={{ fontWeight: 500, color: '#061b31' }}>
+                      <Typography variant="subtitle2" sx={{ fontWeight: 500, color: 'text.primary' }}>
                         {entry.question ? entry.question.substring(0, 40) + (entry.question.length > 40 ? '...' : '') : '复盘记录'}
                       </Typography>
                       <Chip
@@ -123,8 +119,8 @@ function ReviewTimeline({ entries, onEdit, onDelete }) {
                   }
                   secondary={
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, mt: 0.5 }}>
-                      <AccessTimeIcon sx={{ fontSize: 14, color: '#64748d' }} />
-                      <Typography variant="caption" sx={{ color: '#64748d', fontWeight: 300 }}>
+                      <AccessTimeIcon sx={{ fontSize: 14, color: 'text.secondary' }} />
+                      <Typography variant="caption" sx={{ color: 'text.secondary', fontWeight: 300 }}>
                         {dateStr}
                       </Typography>
                     </Box>

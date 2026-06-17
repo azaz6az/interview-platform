@@ -3,16 +3,15 @@ import { JdAdapterProvider } from './contexts/JdAdapterContext';
 import { MockInterviewProvider } from './contexts/MockInterviewContext';
 import { QuestionBankProvider } from './contexts/QuestionBankContext';
 import { ReviewProvider } from './contexts/ReviewContext';
+import { useApiKey } from './contexts/ApiKeyContext';
 import AppRouter from './router/index';
 
-/**
- * App - 应用根组件
- * 注入所有 Context Provider，渲染路由
- */
 function App() {
+  const { apiKey } = useApiKey();
+
   return (
     <JdAdapterProvider>
-      <MockInterviewProvider>
+      <MockInterviewProvider apiKey={apiKey}>
         <QuestionBankProvider>
           <ReviewProvider>
             <AppRouter />
