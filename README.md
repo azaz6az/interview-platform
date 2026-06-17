@@ -1,68 +1,81 @@
-# Interview Platform Delivery
+# 面试平台 (Interview Platform)
 
-> All project deliverables for the interview preparation platform
+一站式面试准备平台，集 JD 分析、AI 模拟面试、题库练习、复盘日记于一体。
 
-## Folder Structure
+## ✨ 功能亮点
 
-| Folder | Contents | How to Use |
-|--------|----------|------------|
-| **source-code** | Full platform source code | `cd source-code && npm install && npm run dev` |
-| **dist** | Production build (ready to deploy) | Deploy to any static hosting service |
-| **documents** | PRD + Architecture docs | Understand product design and tech decisions |
-| **jd-resume-adapter-standalone** | Original standalone JD adapter | Reference only, integrated into platform |
+| 模块 | 功能 |
+|------|------|
+| 📄 JD-简历适配 | 上传简历 + JD 截图 → AI 匹配度分析 + 优化建议 |
+| 🤖 AI 模拟面试 | 选择岗位 → 多轮对话 → 评分反馈 |
+| 🎤 语音输入 | 点击麦克风 → 语音转文字 (Web Speech API) |
+| 📚 题库练习 | 100+ 题目，按岗位/难度分类 |
+| 📝 复盘日记 | 记录面试感受 → 薄弱项分析 → 趋势图表 |
+| 📊 数据看板 | 首页快捷入口 + 薄弱项提醒 |
 
-## Quick Start (One-Click)
+## 🚀 快速开始
 
-Double-click the batch files to start:
-
-| Script | What it does | URL |
-|--------|--------------|-----|
-| **start-dev.bat** | Start dev server (auto install deps + open browser) | http://localhost:5173 |
-| **start-preview.bat** | Preview production build (auto open browser) | http://localhost:8080 |
-| **build.bat** | Rebuild production + copy to dist folder | - |
-
-### Manual Start (Alternative)
-
-Dev mode:
 ```bash
-cd source-code && npm install && npm run dev
+# 克隆项目
+git clone https://github.com/azaz6az/interview-platform.git
+cd interview-platform
+
+# 进入源码目录
+cd source-code
+
+# 安装依赖
+npm install
+
+# 启动开发服务器
+npm run dev
 ```
 
-Preview:
-```bash
-cd dist && python -m http.server 8080
+访问 http://localhost:5173
+
+**Windows 用户**：直接双击 `start-dev.bat` 一键启动
+
+## 🛠️ 技术栈
+
+- **前端框架**: React 18 + Vite 5
+- **UI 组件**: MUI v5 + Tailwind CSS
+- **路由管理**: React Router v6
+- **状态管理**: React Context + useReducer
+- **图表**: Recharts
+- **文件解析**: pdfjs-dist + mammoth
+
+## 📁 项目结构
+
+```
+interview-platform/
+├── source-code/              # 主平台源码
+│   └── src/
+│       ├── modules/          # 功能模块
+│       │   ├── jd-adapter/   # JD-简历适配
+│       │   ├── mock-interview/ # 模拟面试
+│       │   ├── question-bank/  # 题库
+│       │   └── review/       # 复盘日记
+│       ├── pages/            # 页面组件
+│       ├── layouts/          # 布局组件
+│       └── contexts/         # 状态管理
+├── dist/                     # 生产构建
+├── documents/                # 项目文档
+└── jd-resume-adapter-standalone/ # 独立版 JD 适配器
 ```
 
-## Features
+## 📖 文档
 
-| Module | Description | Status |
-|--------|-------------|--------|
-| JD Resume Adapter | Upload resume(PDF/DOCX) + JD screenshot -> AI analysis | Done |
-| AI Mock Interview | Pick position -> multi-round chat -> score feedback | Done |
-| Voice Input | Mic button -> speech-to-text via Web Speech API | Done |
-| Question Bank | 100 questions, categorized by position/difficulty | Done |
-| Review Diary | Create reviews -> weakness analysis -> trend chart | Done |
-| Dashboard | Home shortcuts + weakness widget | Done |
+- [产品需求文档](documents/interview-platform-prd.md)
+- [系统架构文档](documents/interview-platform-architecture.md)
 
-## Tech Stack
+## 📱 响应式设计
 
-- Vite 5 + React 18 + MUI v5 + Tailwind CSS (tw prefix)
-- React Router v6 + React Context + useReducer
-- Recharts (radar chart, trend chart)
-- Web Speech API (voice input)
-- pdfjs-dist + mammoth (file parsing)
-- localStorage (ip_ prefix)
+- **桌面端** (≥960px): 左侧边栏导航
+- **移动端** (<960px): 底部标签栏导航
 
-## Responsive Design
+## 💡 语音输入提示
 
-- Desktop (>=960px): Left sidebar navigation
-- Mobile (<960px): Bottom tab bar navigation
+推荐使用 **Chrome** 浏览器获得最佳语音识别体验。
 
-## Voice Input Tip
+## 📄 License
 
-Use **Chrome** for the best speech recognition experience.
-
-## Documents
-
-- `documents/interview-platform-prd.md` - Product requirements
-- `documents/interview-platform-architecture.md` - System architecture
+MIT
