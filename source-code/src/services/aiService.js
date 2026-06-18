@@ -135,3 +135,59 @@ JD：${jdText}
     return { score: 3, feedback: '回答中规中矩', followUp: '请继续回答下一个问题' };
   }
 }
+
+/**
+ * AI 智能简历分析
+ * @param {string} apiKey - API Key
+ * @param {string} resumeText - 简历文本
+ * @param {string} jdText - JD 文本
+ * @returns {Promise<{score: number, breakdown: Object, suggestions: Array, modifiedResume: string, jdAnalysis: string, matchAnalysis: string}>}
+ */
+export async function analyzeResumeWithAI(apiKey, resumeText, jdText) {
+  const prompt = `你是一位资深HR和职业顾问。请分析以下简历与岗位描述（JD）的匹配度。
+
+## 岗位描述（JD）
+${jdText}
+
+## 简历
+${resumeText}
+
+请按以下要求输出 JSON：
+
+1. **score** (0-100): 整体匹配度分数
+2. **breakdown**: { tech: 0-100, softSkill: 0-100, data: 0-100, experience: 0-100 } 各维度分数
+3. **jdAnalysis**: 对 JD 核心要求的简要分析（100字内），包括必备技能、加分项、软素质
+4. **matchAnalysis**: 简历与 JD 的逐条匹配分析（200字内），指出哪些经历匹配、哪些缺失
+5. **suggestions**: 具体修改建议数组，每项 { type: "keyword"|"phrasing"|"priority"|"skill", title: "标题", description: "具体建议（100字内）", original?: "原文片段", suggested?: "建议改为" }
+6. **modifiedResume**: 基于分析结果优化后的简历全文（保持原有经历，优化措辞和结构以更好匹配 JD，不要编造内容）
+
+要求：
+- suggestions 至少 3 条，最多 6 条，每条都要具体可操作
+- modifiedResume 要保留简历中的真实经历，只优化表述方式
+- 如果简历中已有某些技能但表述不够突出，直接在 modifiedResume 中优化`;
+
+  const result = await callApi(apiKey, {
+    model: 'qwen3.5-flash',
+    messages: [{ role: 'user', content: prompt }],
+    max_tokens: 4000,
+    temperature: 0.5,
+  });
+
+  try {
+    const jsonMatch = result.match(/\{[\s\S]*\}/);
+    if (jsonMatch) {
+      const parsed = JSON.parse(jsonMatch[0]);
+      return {
+        score: parsed.score || 60,
+        breakdown: parsed.breakdown || { tech: 60, softSkill: 60, data: 60, experience: 60 },
+        suggestions: parsed.suggestions || [],
+        modifiedResume: parsed.modifiedResume || resumeText,
+        jdAnalysis: parsed.jdAnalysis || '',
+        matchAnalysis: parsed.matchAnalysis || '',
+      };
+    }
+    return JSON.parse(result);
+  } catch {
+    throw new Error('AI 分析结果解析失败，请重试');
+  }
+}

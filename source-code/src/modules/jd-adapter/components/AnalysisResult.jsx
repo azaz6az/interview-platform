@@ -164,8 +164,31 @@ function AnalysisResult({ result, isAnalyzing, resumeText }) {
           <ScoreGauge score={result.score} />
         </Box>
 
+        {/* AI 分析内容（仅 API 模式有） */}
+        {result.jdAnalysis && (
+          <Box sx={{ mb: 2, p: 2, borderRadius: 2, bgcolor: 'action.hover', border: '1px solid', borderColor: 'divider' }}>
+            <Typography variant="caption" sx={{ fontWeight: 600, color: 'primary.main', display: 'block', mb: 0.5 }}>
+              📋 JD 核心要求
+            </Typography>
+            <Typography variant="body2" sx={{ color: 'text.primary', fontWeight: 300, lineHeight: 1.7 }}>
+              {result.jdAnalysis}
+            </Typography>
+          </Box>
+        )}
+
+        {result.matchAnalysis && (
+          <Box sx={{ mb: 2, p: 2, borderRadius: 2, bgcolor: 'action.hover', border: '1px solid', borderColor: 'divider' }}>
+            <Typography variant="caption" sx={{ fontWeight: 600, color: 'secondary.main', display: 'block', mb: 0.5 }}>
+              🔍 匹配分析
+            </Typography>
+            <Typography variant="body2" sx={{ color: 'text.primary', fontWeight: 300, lineHeight: 1.7, whiteSpace: 'pre-wrap' }}>
+              {result.matchAnalysis}
+            </Typography>
+          </Box>
+        )}
+
         <Typography variant="subtitle2" sx={{ fontWeight: 600, mb: 1.5, color: 'text.primary' }}>
-          修改建议
+          {result.jdAnalysis ? 'AI 改进建议' : '修改建议'}
         </Typography>
 
         {result.suggestions.map((suggestion, index) => (
@@ -176,7 +199,7 @@ function AnalysisResult({ result, isAnalyzing, resumeText }) {
 
         <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 1.5 }}>
           <Typography variant="subtitle2" sx={{ fontWeight: 600, color: 'text.primary' }}>
-            优化后的简历
+            {result.jdAnalysis ? 'AI 优化后的简历' : '优化后的简历'}
           </Typography>
           <Box sx={{ display: 'flex', gap: 1 }}>
             <Tooltip title={copied ? '已复制！' : '复制到剪贴板'}>

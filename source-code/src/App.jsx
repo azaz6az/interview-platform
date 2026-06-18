@@ -10,7 +10,7 @@ function App() {
   const { apiKey } = useApiKey();
 
   return (
-    <JdAdapterProvider>
+    <JdAdapterProvider apiKey={apiKey}>
       <MockInterviewProvider apiKey={apiKey}>
         <QuestionBankProvider>
           <ReviewProvider>

@@ -31,3 +31,7 @@ Thumbs.db
 
 # Reasonix local config
 .reasonix/
+source-code/chi_sim.traineddata
+source-code/eng.traineddata
+source-code/node_modules/
+dist/

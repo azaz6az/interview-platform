@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useReducer, useCallback } from 'react';
 import { analyzeResume } from '../modules/jd-adapter/engine/analyzer';
+import { analyzeResumeWithAI } from '../services/aiService';
 import { saveResume, saveJD, loadResume, loadJD, saveJDImage, loadJDImage } from '../shared/storage';
 
 /** 初始状态 */
@@ -51,7 +52,7 @@ const JdAdapterContext = createContext(null);
 /**
  * JdAdapterProvider - JD 适配器全局状态管理
  */
-export function JdAdapterProvider({ children }) {
+export function JdAdapterProvider({ children, apiKey }) {
   const [state, dispatch] = useReducer(jdAdapterReducer, {
     ...initialState,
     resumeText: loadResume() || '',
@@ -107,22 +108,46 @@ export function JdAdapterProvider({ children }) {
     dispatch({ type: ACTION_TYPES.SET_ANALYZING, payload: true });
 
     try {
-      const result = analyzeResume(state.resumeText, state.jdText);
-      await new Promise((resolve) => setTimeout(resolve, 800));
+      let result;
+      if (apiKey) {
+        // 有 API Key → AI 智能分析
+        result = await analyzeResumeWithAI(apiKey, state.resumeText, state.jdText);
+      } else {
+        // 无 API Key → 本地规则分析
+        result = analyzeResume(state.resumeText, state.jdText);
+        await new Promise((resolve) => setTimeout(resolve, 800));
+      }
       dispatch({ type: ACTION_TYPES.SET_RESULT, payload: result });
       dispatch({
         type: ACTION_TYPES.SET_SNACKBAR,
-        payload: { open: true, message: '分析完成！', severity: 'success' },
+        payload: { open: true, message: apiKey ? 'AI 分析完成！' : '分析完成！', severity: 'success' },
       });
     } catch (error) {
-      dispatch({
-        type: ACTION_TYPES.SET_SNACKBAR,
-        payload: { open: true, message: `分析出错：${error.message}`, severity: 'error' },
-      });
+      // AI 分析失败时降级到本地
+      if (apiKey) {
+        try {
+          const fallbackResult = analyzeResume(state.resumeText, state.jdText);
+          dispatch({ type: ACTION_TYPES.SET_RESULT, payload: fallbackResult });
+          dispatch({
+            type: ACTION_TYPES.SET_SNACKBAR,
+            payload: { open: true, message: 'AI 分析失败，已使用本地分析', severity: 'warning' },
+          });
+        } catch (e) {
+          dispatch({
+            type: ACTION_TYPES.SET_SNACKBAR,
+            payload: { open: true, message: `分析出错：${e.message}`, severity: 'error' },
+          });
+        }
+      } else {
+        dispatch({
+          type: ACTION_TYPES.SET_SNACKBAR,
+          payload: { open: true, message: `分析出错：${error.message}`, severity: 'error' },
+        });
+      }
     } finally {
       dispatch({ type: ACTION_TYPES.SET_ANALYZING, payload: false });
     }
-  }, [state.resumeText, state.jdText]);
+  }, [state.resumeText, state.jdText, apiKey]);
 
   /** 重置所有内容 */
   const handleReset = useCallback(() => {
