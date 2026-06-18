@@ -50,3 +50,4 @@ npm run dev
 ## 技术栈
 
 React 18 + Vite 5 + MUI v5 + React Router v6 + Recharts + 通义千问 API
+# Updated
